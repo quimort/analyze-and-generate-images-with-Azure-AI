@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-
+import analyzeImages from './azure-image-analysis';
 import './App.css';
 
 function App() {
   const [imageUrl, setImageUrl] = useState('');
   const [result, setResult] = useState('');
+  const features = "caption";
+  const language = "en";
 
-  const analyzeImage = () => {
-    // Add your code for image analysis here
-    setResult(`Analyzing image: ${imageUrl}`);
+  const analyzeImage = async () => {
+    const analysisResult = await analyzeImages(imageUrl,features,language);
+    setResult(analysisResult);
   };
 
   const generateImage = () => {
@@ -34,7 +36,12 @@ function App() {
       <br />
       <button onClick={analyzeImage}>Analyze Image</button>
       <button onClick={generateImage}>Generate Image</button>
-      <div id="result">{result}</div>
+      {result && (
+        <div>
+          <p>Analysis Result:</p>
+          <pre>{JSON.stringify(result, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 }
