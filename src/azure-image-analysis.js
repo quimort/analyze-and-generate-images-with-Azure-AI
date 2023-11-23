@@ -1,23 +1,22 @@
 
 
-async function analyzeImages(imageURL,features,language){
+export async function analyzeImages(imageURL,features,language){
 
     const visionkey = process.env.REACT_APP_VISION_KEY;
     const visionendpoint = process.env.REACT_APP_VISION_ENDPOINT;
-    console.log('VISION_ENDPOINT:', process.env.REACT_APP_VISION_ENDPOINT);
     const apiUrl = `${visionendpoint}computervision/imageanalysis:analyze?api-version=2023-02-01-preview&features=${features}&language=${language}`
     try {
+        const body = JSON.stringify({
+          url: imageURL,
+        });
         const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Ocp-Apim-Subscription-Key': visionkey
           },
-          body: {
-            'url':imageURL
-          },
+          body: body,
         });
-        console.log(response.json())
         if (!response.ok) {
             throw new Error('API request failed');
           }
@@ -33,4 +32,15 @@ async function analyzeImages(imageURL,features,language){
 
 
 }
-export default analyzeImages;
+export function analyzeImagesIsConfigured(){
+
+  const requiredVariables = ['REACT_APP_VISION_KEY', 'REACT_APP_VISION_ENDPOINT'];
+
+    for (const variable of requiredVariables) {
+    if (!process.env[variable] || process.env[variable].trim() === '') {
+        return false;
+    }
+    }
+
+    return true;
+}
